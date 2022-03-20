@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ShopChild.Models.Product>
+@{
+    ViewBag.Title = "List";
+}
+
+<h2>List</h2>
+
+
+@using (Ajax.BeginForm("FinProductByNameAndCate", "Products",
+                new AjaxOptions
+                {
+                    InsertionMode = InsertionMode.Replace,
+                    HttpMethod = "Get",
+                    OnFailure = "failed",
+                    LoadingElementId = "ajax-loader",
+                    UpdateTargetId = "results",
+                }))
+
+{
+    <div style="margin-bottom:10px">
+        Tìm theo danh mục
+        <select name="categoryId" id="categoryId">
+            <option>Chọn danh mục</option>
+            @foreach (var category in ViewBag.ListCategory)
+            {
+                <option value=@category.Id>@category.Name</option>
+            }
+        </select>
+        <input type="submit" value="Search" id="findCategory" style="display:none" />
+    </div>
+    <p>
+        Tìm theo tên: @Html.TextBox("SearchName")
+        <input type="submit" value="Search" class="btn btn-primary" id="btnSubmit" />
+    </p>
+}
+
+<h3> Product Specification </h3>
+<p>
+    @Html.ActionLink("Carts", "Index", "Carts", null, new { @class = "btn btn-primary" })
+</p>
+<div class="container">
+    <div class="row" id="results">
+        @foreach (var x in Model)
+        {
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <img src="@x.Thumbnail">
+                    <div class="caption">
+                        <h3>@x.Name</h3>
+                        <p><b>Giá:</b> @x.Price đ</p>
+                        <p><b>Danh mục:</b> @x.Category.Name</p>
+                        <p><b>Mã sản phẩm:</b> @x.Id</p>
+                        <p>
+                            @Html.ActionLink("Thêm vào giỏ", "AddToCart", "Carts", new { ProductId = @x.Id, ProductName = x.Name, ProductThumbnail = x.Thumbnail, UnitPrice = x.Price }, new { @class = "btn btn-primary" })
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+}
